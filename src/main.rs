@@ -6,12 +6,17 @@ struct Foo {
     value: String,
 }
 
-const TEST_CASE: &[u8] = include_bytes!("test_case.xml");
-
 fn main() {
-    let foo_result: Result<Foo, _> = quick_xml::de::from_reader(TEST_CASE);
-    println!("as Foo: {:?}", foo_result);
+    run_test("bad test case", b"<foo><![CDATA[<p>bar</p>]]></foo>");
+    run_test("working test case", b"<foo>&lt;p&gt;bar&lt;/p&gt;</foo>");
+}
 
-    let string_result: Result<String, _> = quick_xml::de::from_reader(TEST_CASE);
-    println!("as bare string: {:?}", string_result);
+fn run_test(name: &str, test_case: &[u8]) {
+    let foo_result: Result<Foo, _> = quick_xml::de::from_reader(test_case);
+    println!("{} as Foo: {:?}", name, foo_result);
+
+    let string_result: Result<String, _> = quick_xml::de::from_reader(test_case);
+    println!("{} as bare string: {:?}", name, string_result);
+
+    println!();
 }
